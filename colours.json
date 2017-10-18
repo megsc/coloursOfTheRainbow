@@ -1,0 +1,32 @@
+[
+  {
+    "name": "Aqua",
+    "hex": "#00ffff",
+    "rgb": "0, 255, 255"
+  },
+  {
+    "name": "Indigo",
+    "hex": "#4b0082",
+    "rgb": "75, 0, 130"
+  },
+  {
+    "name": "Turquoise",
+    "hex": "#40e0d0",
+    "rgb": "64, 224, 208"
+  },
+  {
+    "name": "Chocolate",
+    "hex": "#d2691e",
+    "rgb": "210, 105, 30"
+  },
+  {
+    "name": "Green",
+    "hex": "#008000",
+    "rgb": "0, 128, 0"
+  },
+  {
+    "name": "CornflowerBlue",
+    "hex": "#659CEF",
+    "rgb": "101,156,239"
+  }
+]
