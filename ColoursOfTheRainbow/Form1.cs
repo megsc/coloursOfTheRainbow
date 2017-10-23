@@ -16,6 +16,9 @@ namespace ColoursOfTheRainbow
 {
     public partial class Main : Form
     {
+        /// <summary>
+        /// An array of Colour objects
+        /// </summary>
         Colour[] newColour;
 
         public Main()
@@ -24,18 +27,13 @@ namespace ColoursOfTheRainbow
 
             string json;
 
-            //using (StreamReader file = new StreamReader(@"../../../test.json"))
+            // Reading json file into array of Colour objects.
             using (StreamReader file = new StreamReader(@"../../../colours.json"))
             {
                 
                 json = file.ReadToEnd();
                 newColour = JsonConvert.DeserializeObject<Colour[]>(json);
             }
-
-            
-            //MessageBox.Show(newColour[0].name + newColour[0].hex);
-
-            //Colour newColour = JsonConvert.DeserializeObject<Colour>(File.ReadAllText(Properties.Resources.colours));
 
 
         }
@@ -44,17 +42,12 @@ namespace ColoursOfTheRainbow
         {
             string colourList = string.Empty;
 
-            //for (int j = 0; j < newColour.Length; j++)
-            //{
-            //    colourList += "Colour: " + newColour[j].name + " has Hex code: " + newColour[j].hex + newColour[j].rgb + Environment.NewLine;
-            //}
-
-            //MessageBox.Show(colourList);
-
             listView1_showColour.Items.Clear();
 
+            // Loading listview with specified columns.
             listView1_showColour.View = View.Details;
 
+            // Looping through array of Colour objects to populate listview.
             for (int j = 0; j < newColour.Length; j++)
             {
                 
@@ -68,6 +61,7 @@ namespace ColoursOfTheRainbow
 
             }
 
+            // Sorting listview items alphabetically.
             listView1_showColour.Sorting = SortOrder.Ascending;
         }
 
@@ -80,80 +74,35 @@ namespace ColoursOfTheRainbow
 
         private void btn_AddColour_Click(object sender, EventArgs e)
         {
+            // Adding user input from textbox to variables.
             string addColName = textBox3_AddName.Text;
             string addColHex = textBox4_AddHex.Text;
             string addColRgb = textBox1_AddRGB.Text;
 
-            //textBox1_AddRGB.TextChanged += TextBox1_AddRGB_TextChanged;
-            //textBox4_AddHex.TextChanged += TextBox4_AddHex_TextChanged;
-
+            // Creating char array's to verify user input.
             char[] hex = addColHex.ToCharArray();
             char[] rgb = addColRgb.ToCharArray();
 
-
-            if (Color.FromName(addColName).IsKnownColor == false)
+            // 
+            if (NameVerify(addColName))
             {
-                MessageBox.Show("Colour reference not found. Colour not entered");
+                if (HexFormat(hex))
+                {
+                    if (RGBFormat(rgb))
+                    {
+                        WriteToJson(addColName, addColHex, addColRgb);
+                    }
+                }
             }
-
-            else if (Color.FromName(addColName).IsKnownColor == true && textBox1_AddRGB.Text == "" && textBox4_AddHex.Text == "")
-            {
-                MessageBox.Show("Please add colour Hex code and RGB code");
-            }
-
-            else
-            {
-                if (hex[0] != '#')
-                {
-                    //textBox4_AddHex.TextChanged -= TextBox4_AddHex_TextChanged;
-                    MessageBox.Show("Please enter Hex code starting with #");
-                }
-
-                else if (hex.Length < 7 || hex.Length > 7)
-                {
-                    //textBox4_AddHex.TextChanged -= TextBox4_AddHex_TextChanged;
-                    MessageBox.Show("Please enter Hex code with 7 characters starting with #");
-                }
-
-                else if (rgb.Length < 11 || hex.Length > 11)
-                {
-                    MessageBox.Show("Please enter RGB code with 11 characters using format: 111,111,111");
-                }
-
-                else if (rgb[3] != ',' && rgb[7] != ',')
-                {
-                    MessageBox.Show("Please enter RGB code with 11 characters using format: 111,111,111");
-                }
-
-                else
-                {
-                    Array.Resize(ref newColour, newColour.Length + 1);
-
-                    newColour[newColour.Length - 1] = new Colour();
-
-                    newColour[newColour.Length - 1].name = addColName;
-                    newColour[newColour.Length - 1].hex = addColHex;
-                    newColour[newColour.Length - 1].rgb = addColRgb;
-
-
-                    string nc = JsonConvert.SerializeObject(newColour, Formatting.Indented);
-                    //string nc = JsonConvert.SerializeObject(addCol, Formatting.Indented);
-                    //File.WriteAllText(@"../../../test.json", nc);
-                    File.WriteAllText(@"../../../colours.json", nc);
-
-                    MessageBox.Show(addColName + " with Hex " + addColHex + " and RGB of " + addColRgb + " has been added!");
-                }
-
-                
-            }
-
+   
             textBox3_AddName.Clear();
             textBox4_AddHex.Clear();
             textBox1_AddRGB.Clear();
+
         }
 
 
-
+        // Fill picturebox with colour that is selected from listview.
         private void listView1_showColour_SelectedIndexChanged_1(object sender, EventArgs e)
         {
             for (int j = 0; j < listView1_showColour.SelectedItems.Count; j++)
@@ -166,8 +115,123 @@ namespace ColoursOfTheRainbow
         }
 
 
+        /// <summary>
+        /// Method to verify if Colour Name is found in the Color library.
+        /// </summary>
+        /// <param name="addColName"></param>
+        /// <returns></returns>
+        public bool NameVerify(string addColName)
+        {
+            // Checking that Colour Name entered is known in the Colour Library.
+            if (Color.FromName(addColName).IsKnownColor == false)
+            {
+                MessageBox.Show("Colour reference not found. Colour not entered");
+                return false;
+            }
 
+            // Checking that RGB and HEX codes have been entered and textbox are not null.
+            else if (Color.FromName(addColName).IsKnownColor == true && textBox1_AddRGB.Text == "" && textBox4_AddHex.Text == "")
+            {
+                MessageBox.Show("Please add colour Hex code and RGB code");
+                return false;
+            }
+
+            else
+            {
+                return true;
+            }
+
+        }
+
+        /// <summary>
+        /// Method to verify if Hex Colour code has been entered in the correct format by the user.
+        /// </summary>
+        /// <param name="hex"></param>
+        /// <returns></returns>
+        public bool HexFormat(char[] hex)
+        {
+            if (hex[0] != '#')
+            {
+                MessageBox.Show("Please enter Hex code starting with #");
+                return false;
+            }
+
+            else if (hex.Length < 7 || hex.Length > 7)
+            {
+                MessageBox.Show("Please enter Hex code with 7 characters starting with #");
+                return false;
+            }
+
+            else
+            {
+                return true;
+            }
+
+           
+        }
+
+
+        /// <summary>
+        /// Method to verify if RGB Colour code has been entered in the correct format by the user.
+        /// </summary>
+        /// <param name="rgb"></param>
+        /// <returns></returns>
+        public bool RGBFormat(char[] rgb)
+        {
+            if (rgb.Length < 11 || rgb.Length > 11)
+            {
+                MessageBox.Show("Please enter RGB code with 11 characters using format: 111,111,111");
+                return false;
+            }
+
+            // Verify that RGB code is entered in RGB format.
+            else if (rgb[3] != ',')
+            {
+                MessageBox.Show("Please enter RGB code with 11 characters using format: 111,111,111");
+                return false;
+            }
+
+            else if (rgb[7] != ',')
+            {
+                MessageBox.Show("Please enter RGB code with 11 characters using format: 111,111,111");
+                return false;
+            }
+
+            else
+            {
+                return true;
+            }
+
+          
+        }
+
+        /// <summary>
+        /// Method to write new Colour to json file using user input from form.
+        /// </summary>
+        /// <param name="addColName"></param>
+        /// <param name="addColHex"></param>
+        /// <param name="addColRgb"></param>
+        public void WriteToJson(string addColName, string addColHex, string addColRgb)
+        {
+            // Add new instance into the array.
+            Array.Resize(ref newColour, newColour.Length + 1);
+
+            newColour[newColour.Length - 1] = new Colour();
+
+            newColour[newColour.Length - 1].name = addColName;
+            newColour[newColour.Length - 1].hex = addColHex;
+            newColour[newColour.Length - 1].rgb = addColRgb;
+
+            // Format array into json.
+            string nc = JsonConvert.SerializeObject(newColour, Formatting.Indented);
+
+            // Write array to json file.
+            File.WriteAllText(@"../../../colours.json", nc);
+
+            // Tell the user Colour has been added.
+            MessageBox.Show(addColName + " with Hex " + addColHex + " and RGB of " + addColRgb + " has been added!");
+        }
 
     }
-    
+ 
 }

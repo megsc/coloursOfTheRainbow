@@ -126,6 +126,7 @@
             // textBox4_AddHex
             // 
             this.textBox4_AddHex.Location = new System.Drawing.Point(218, 259);
+            this.textBox4_AddHex.MaxLength = 7;
             this.textBox4_AddHex.Name = "textBox4_AddHex";
             this.textBox4_AddHex.Size = new System.Drawing.Size(127, 20);
             this.textBox4_AddHex.TabIndex = 14;
@@ -142,6 +143,7 @@
             // textBox1_AddRGB
             // 
             this.textBox1_AddRGB.Location = new System.Drawing.Point(384, 259);
+            this.textBox1_AddRGB.MaxLength = 11;
             this.textBox1_AddRGB.Name = "textBox1_AddRGB";
             this.textBox1_AddRGB.Size = new System.Drawing.Size(127, 20);
             this.textBox1_AddRGB.TabIndex = 16;
